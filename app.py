@@ -59,7 +59,7 @@ all_features = ['age', 'sex', 'trestbps', 'chol', 'fbs', 'restecg_1', 'restecg_2
 # Load scaler, model, and important features
 try:
     scaler = joblib.load("scaler.pkl")
-    model = joblib.load("random_forest_model.pkl")
+    model = joblib.load("random_forest_model (1).pkl")
     important_features = joblib.load("important_features.pkl")
 
     # Convert input data to DataFrame for easier feature selection
