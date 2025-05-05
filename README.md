@@ -35,3 +35,5 @@ Distribution of predicted vs actual labels
 
 Interactive command-line prediction for new patient data
 
+👨‍💻 Developed by [Youssef Abdelnasser](https://www.linkedin.com/in/youssef-abdalnasser-33705b262/)
+
