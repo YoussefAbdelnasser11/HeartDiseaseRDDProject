@@ -2,6 +2,7 @@ import streamlit as st
 import joblib
 import numpy as np
 import matplotlib.pyplot as plt
+import pandas as pd
 
 st.set_page_config(page_title="🔍 Heart Disease Predictor", layout="centered")
 
@@ -51,17 +52,28 @@ thal_3 = 1 if thal_val == 3 else 0
 input_data = np.array([[age, sex_val, trestbps, chol, fbs_val, restecg_1, restecg_2, thalach,
                         exang_val, oldpeak, slope_1, slope_2, ca, cp_1, cp_2, cp_3, thal_2, thal_3]])
 
-# Load scaler and model
+# Define all possible features (before selection)
+all_features = ['age', 'sex', 'trestbps', 'chol', 'fbs', 'restecg_1', 'restecg_2', 'thalach',
+                'exang', 'oldpeak', 'slope_1', 'slope_2', 'ca', 'cp_1', 'cp_2', 'cp_3', 'thal_2', 'thal_3']
+
+# Load scaler, model, and important features
 try:
     scaler = joblib.load("scaler.pkl")
-    model = joblib.load("random_forest_model (3).pkl")
+    model = joblib.load("random_forest_model.pkl")
+    important_features = joblib.load("important_features.pkl")
 
-    # Scale the input data
-    input_data_scaled = scaler.transform(input_data)
+    # Convert input data to DataFrame for easier feature selection
+    input_df = pd.DataFrame(input_data, columns=all_features)
+
+    # Scale the input data (scaler expects 18 features)
+    input_data_scaled = scaler.transform(input_df)
+
+    # Select only the important features (11 features) for the model
+    input_data_selected = input_df[important_features]
 
     # Predict
-    prediction = model.predict(input_data_scaled)[0]
-    proba = model.predict_proba(input_data_scaled)[0]
+    prediction = model.predict(input_data_selected)[0]
+    proba = model.predict_proba(input_data_selected)[0]
     
     st.subheader("📊 Prediction Result")
     result_text = "✅ No Heart Disease Detected" if prediction == 0 else "⚠️ High Risk of Heart Disease"
@@ -95,5 +107,5 @@ try:
     st.markdown("### Created by [Youssef Abdelnasser](https://www.linkedin.com/in/youssef-abdalnasser-33705b262/)")
 
 except Exception as e:
-    st.error("Model or scaler file not found, or prediction failed.")
+    st.error("Model, scaler, or important features file not found, or prediction failed.")
     st.text(str(e))
