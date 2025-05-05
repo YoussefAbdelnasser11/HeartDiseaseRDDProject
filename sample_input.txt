@@ -1,0 +1,16 @@
+# Sample input for testing
+# These values should match the model's expected input order
+
+age: 55
+sex: Male
+cp: 0
+trestbps: 140
+chol: 250
+fbs: 0
+restecg: 1
+thalach: 150
+exang: 0
+oldpeak: 1.0
+slope: 2
+ca: 0
+thal: 2
