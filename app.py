@@ -65,7 +65,7 @@ all_features = ['age', 'sex', 'trestbps', 'chol', 'fbs', 'restecg_1.0', 'restecg
 
 # Load model
 try:
-    model = joblib.load("random_forest_model.pkl")
+    model = joblib.load("random_forest_model (2).pkl")
 
     # Validate input data
     input_df = pd.DataFrame(input_data, columns=all_features)
