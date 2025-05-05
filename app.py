@@ -28,8 +28,8 @@ slope = st.selectbox("Slope of Peak Exercise ST Segment", ["Upsloping (0)", "Fla
                      help="0: Upsloping, 1: Flat, 2: Downsloping")
 ca = st.selectbox("Number of Major Vessels Colored", [0, 1, 2, 3, 4],
                   help="Number of major vessels (0-4) colored by fluoroscopy")
-thal = st.selectbox("Thalassemia", ["No Data (0)", "Normal (1)", "Fixed Defect (2)"],
-                    help="0: No data, 1: Normal, 2: Fixed defect")
+thal = st.selectbox("Thalassemia", ["No Data (0)", "Normal (1)", "Fixed Defect (2)", "Reversible Defect (3)"],
+                    help="0: No data, 1: Normal, 2: Fixed defect, 3: Reversible defect")
 
 # Convert selectbox inputs to numeric values
 def extract_numeric(value):
@@ -54,18 +54,19 @@ slope_1 = 1 if slope_val == 1 else 0
 slope_2 = 1 if slope_val == 2 else 0
 thal_1 = 1 if thal_val == 1 else 0
 thal_2 = 1 if thal_val == 2 else 0
+thal_3 = 1 if thal_val == 3 else 0
 
-# Create input array with 18 features
+# Create input array with 19 features
 input_data = np.array([[age, sex_val, trestbps, chol, fbs_val, restecg_1, restecg_2, thalach,
-                        exang_val, oldpeak, slope_1, slope_2, ca, cp_1, cp_2, cp_3, thal_1, thal_2]])
+                        exang_val, oldpeak, slope_1, slope_2, ca, cp_1, cp_2, cp_3, thal_1, thal_2, thal_3]])
 
 # Define all possible features (matching training feature names with .0 suffix)
 all_features = ['age', 'sex', 'trestbps', 'chol', 'fbs', 'restecg_1.0', 'restecg_2.0', 'thalach',
-                'exang', 'oldpeak', 'slope_1.0', 'slope_2.0', 'ca', 'cp_1.0', 'cp_2.0', 'cp_3.0', 'thal_1.0', 'thal_2.0']
+                'exang', 'oldpeak', 'slope_1.0', 'slope_2.0', 'ca', 'cp_1.0', 'cp_2.0', 'cp_3.0', 'thal_1.0', 'thal_2.0', 'thal_3.0']
 
 # Load model
 try:
-    model = joblib.load("random_forest_model (3).pkl")
+    model = joblib.load("random_forest_model.pkl(3)")
 
     # Validate input data
     input_df = pd.DataFrame(input_data, columns=all_features)
@@ -73,7 +74,7 @@ try:
     # Ensure numeric data
     input_df = input_df.astype(float)
 
-    # Predict directly (no scaling, using all 18 features)
+    # Predict directly (no scaling, using all 19 features)
     prediction = model.predict(input_df)[0]
     proba = model.predict_proba(input_df)[0]
     
