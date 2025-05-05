@@ -6,7 +6,6 @@ import matplotlib.pyplot as plt
 st.set_page_config(page_title="🔍 Heart Disease Predictor", layout="centered")
 
 st.title("❤️ Heart Disease Prediction App")
-st.markdown("### Created by [Youssef Abdelnasser](https://www.linkedin.com/in/youssef-abdalnasser-33705b262/)")
 st.markdown("---")
 
 st.header("📝 Enter Patient Data")
@@ -29,11 +28,17 @@ sex_val = 1 if sex == "Male" else 0
 input_data = np.array([[age, sex_val, cp, trestbps, chol, fbs, restecg, thalach,
                         exang, oldpeak, slope, ca, thal]])
 
-# Load model and predict
+# Load scaler and model
 try:
-    model = joblib.load("my_model.pkl")
-    prediction = model.predict(input_data)[0]
-    proba = model.predict_proba(input_data)[0]
+    scaler = joblib.load("scaler.pkl")
+    model = joblib.load("random_forest_model.pkl")
+
+    # Scale the input data
+    input_data_scaled = scaler.transform(input_data)
+
+    # Predict
+    prediction = model.predict(input_data_scaled)[0]
+    proba = model.predict_proba(input_data_scaled)[0]
     
     st.subheader("📊 Prediction Result")
     result_text = "✅ No Heart Disease Detected" if prediction == 0 else "⚠️ High Risk of Heart Disease"
@@ -62,6 +67,10 @@ try:
     ax2.set_title("Patient's Vitals Radar Chart")
     st.pyplot(fig2)
 
+    # Add creator's name at the bottom
+    st.markdown("---")
+    st.markdown("### Created by [Youssef Abdelnasser](https://www.linkedin.com/in/youssef-abdalnasser-33705b262/)")
+
 except Exception as e:
-    st.error("Model file not found or prediction failed.")
+    st.error("Model or scaler file not found, or prediction failed.")
     st.text(str(e))
