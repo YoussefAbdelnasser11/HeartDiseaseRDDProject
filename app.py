@@ -23,21 +23,33 @@ slope = st.selectbox("Slope of Peak Exercise ST Segment", ["Upsloping (0)", "Fla
 ca = st.selectbox("Number of Major Vessels Colored", [0, 1, 2, 3, 4])
 thal = st.selectbox("Thalassemia", ["No Data (0)", "Normal (1)", "Fixed Defect (2)", "Reversible Defect (3)"])
 
-# Prepare input for one-hot encoded features
+# Convert selectbox inputs to numeric values
+def extract_numeric(value):
+    # Extract the number from strings like "No (0)" or "Atypical Angina (1)"
+    return int(value.split('(')[1].strip(')'))
+
 sex_val = 1 if sex == "Male" else 0
-cp_1 = 1 if cp == "Atypical Angina (1)" else 0
-cp_2 = 1 if cp == "Non-Anginal Pain (2)" else 0
-cp_3 = 1 if cp == "Asymptomatic (3)" else 0
-restecg_1 = 1 if restecg == "ST-T Wave Abnormality (1)" else 0
-restecg_2 = 1 if restecg == "Left Ventricular Hypertrophy (2)" else 0
-slope_1 = 1 if slope == "Flat (1)" else 0
-slope_2 = 1 if slope == "Downsloping (2)" else 0
-thal_2 = 1 if thal == "Fixed Defect (2)" else 0
-thal_3 = 1 if thal == "Reversible Defect (3)" else 0
+cp_val = extract_numeric(cp)
+fbs_val = extract_numeric(fbs)
+restecg_val = extract_numeric(restecg)
+exang_val = extract_numeric(exang)
+slope_val = extract_numeric(slope)
+thal_val = extract_numeric(thal)
+
+# Prepare one-hot encoded variables
+cp_1 = 1 if cp_val == 1 else 0
+cp_2 = 1 if cp_val == 2 else 0
+cp_3 = 1 if cp_val == 3 else 0
+restecg_1 = 1 if restecg_val == 1 else 0
+restecg_2 = 1 if restecg_val == 2 else 0
+slope_1 = 1 if slope_val == 1 else 0
+slope_2 = 1 if slope_val == 2 else 0
+thal_2 = 1 if thal_val == 2 else 0
+thal_3 = 1 if thal_val == 3 else 0
 
 # Create input array with 18 features
-input_data = np.array([[age, sex_val, trestbps, chol, fbs, restecg_1, restecg_2, thalach,
-                        exang, oldpeak, slope_1, slope_2, ca, cp_1, cp_2, cp_3, thal_2, thal_3]])
+input_data = np.array([[age, sex_val, trestbps, chol, fbs_val, restecg_1, restecg_2, thalach,
+                        exang_val, oldpeak, slope_1, slope_2, ca, cp_1, cp_2, cp_3, thal_2, thal_3]])
 
 # Load scaler and model
 try:
