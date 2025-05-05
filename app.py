@@ -31,7 +31,7 @@ input_data = np.array([[age, sex_val, cp, trestbps, chol, fbs, restecg, thalach,
 # Load scaler and model
 try:
     scaler = joblib.load("scaler.pkl")
-    model = joblib.load("random_forest_model.pkl")
+    model = joblib.load("random_forest_model (3).pkl")
 
     # Scale the input data
     input_data_scaled = scaler.transform(input_data)
