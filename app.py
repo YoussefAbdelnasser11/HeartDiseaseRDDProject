@@ -39,9 +39,20 @@ def load_model():
     
     if not os.path.exists(model_path):
         if os.path.exists(link_file):
-            with open(link_file, 'r') as f:
-                model_url = f.read().strip().split(': ')[1]
             try:
+                with open(link_file, 'r') as f:
+                    content = f.read().strip()
+                if not content:
+                    st.error(f"Model link file '{link_file}' is empty.")
+                    return None
+                # Extract URL after 'Google Drive model link:'
+                if ': ' not in content:
+                    st.error(f"Invalid format in '{link_file}'. Expected 'Google Drive model link: <URL>'.")
+                    return None
+                model_url = content.split(': ', 1)[1].strip()
+                if not model_url.startswith("https://drive.google.com"):
+                    st.error(f"Invalid Google Drive URL in '{link_file}'.")
+                    return None
                 gdown.download(model_url, model_path, quiet=False)
             except Exception as e:
                 st.error(f"Error downloading model: {e}")
@@ -107,8 +118,10 @@ if st.button("Predict", key="predict"):
             # Display prediction
             if prediction[0] == 1:
                 st.markdown('<div class="prediction-box" style="background-color: #FFCDD2;"><h3>⚠️ Prediction: <b>Heart Disease Detected</b> 💔</h3></div>', unsafe_allow_html=True)
+                st.warning("Recommendation: Consult a cardiologist and consider lifestyle changes.")
             else:
                 st.markdown('<div class="prediction-box" style="background-color: #C8E6C9;"><h3>✅ Prediction: <b>No Heart Disease</b> ❤️</h3></div>', unsafe_allow_html=True)
+                st.info("Recommendation: Maintain a healthy diet and regular exercise.")
 
             # Visualization 1: Compare patient input to normal ranges
             st.markdown('<p class="subheader">Your Input vs. Normal Ranges</p>', unsafe_allow_html=True)
