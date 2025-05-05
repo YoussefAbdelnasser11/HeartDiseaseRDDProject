@@ -11,22 +11,33 @@ st.markdown("---")
 st.header("📝 Enter Patient Data")
 age = st.slider("Age", 20, 100, 50)
 sex = st.selectbox("Sex", ["Male", "Female"])
-cp = st.selectbox("Chest Pain Type (cp)", [0, 1, 2, 3])
+cp = st.selectbox("Chest Pain Type", ["Typical Angina (0)", "Atypical Angina (1)", "Non-Anginal Pain (2)", "Asymptomatic (3)"])
 trestbps = st.slider("Resting Blood Pressure", 80, 200, 120)
 chol = st.slider("Serum Cholesterol (mg/dl)", 100, 600, 240)
-fbs = st.selectbox("Fasting Blood Sugar > 120 mg/dl", [0, 1])
-restecg = st.selectbox("Resting ECG Results", [0, 1, 2])
+fbs = st.selectbox("Fasting Blood Sugar > 120 mg/dl", ["No (0)", "Yes (1)"])
+restecg = st.selectbox("Resting ECG Results", ["Normal (0)", "ST-T Wave Abnormality (1)", "Left Ventricular Hypertrophy (2)"])
 thalach = st.slider("Maximum Heart Rate Achieved", 70, 220, 150)
-exang = st.selectbox("Exercise Induced Angina", [0, 1])
+exang = st.selectbox("Exercise Induced Angina", ["No (0)", "Yes (1)"])
 oldpeak = st.slider("Oldpeak", 0.0, 6.0, 1.0)
-slope = st.selectbox("Slope of Peak Exercise ST Segment", [0, 1, 2])
+slope = st.selectbox("Slope of Peak Exercise ST Segment", ["Upsloping (0)", "Flat (1)", "Downsloping (2)"])
 ca = st.selectbox("Number of Major Vessels Colored", [0, 1, 2, 3, 4])
-thal = st.selectbox("Thalassemia", [0, 1, 2, 3])
+thal = st.selectbox("Thalassemia", ["No Data (0)", "Normal (1)", "Fixed Defect (2)", "Reversible Defect (3)"])
 
-# Prepare input
+# Prepare input for one-hot encoded features
 sex_val = 1 if sex == "Male" else 0
-input_data = np.array([[age, sex_val, cp, trestbps, chol, fbs, restecg, thalach,
-                        exang, oldpeak, slope, ca, thal]])
+cp_1 = 1 if cp == "Atypical Angina (1)" else 0
+cp_2 = 1 if cp == "Non-Anginal Pain (2)" else 0
+cp_3 = 1 if cp == "Asymptomatic (3)" else 0
+restecg_1 = 1 if restecg == "ST-T Wave Abnormality (1)" else 0
+restecg_2 = 1 if restecg == "Left Ventricular Hypertrophy (2)" else 0
+slope_1 = 1 if slope == "Flat (1)" else 0
+slope_2 = 1 if slope == "Downsloping (2)" else 0
+thal_2 = 1 if thal == "Fixed Defect (2)" else 0
+thal_3 = 1 if thal == "Reversible Defect (3)" else 0
+
+# Create input array with 18 features
+input_data = np.array([[age, sex_val, trestbps, chol, fbs, restecg_1, restecg_2, thalach,
+                        exang, oldpeak, slope_1, slope_2, ca, cp_1, cp_2, cp_3, thal_2, thal_3]])
 
 # Load scaler and model
 try:
