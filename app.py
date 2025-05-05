@@ -1,6 +1,6 @@
 import streamlit as st
 from pyspark.sql import SparkSession
-from pyspark.mllib.classification import LogisticRegressionWithLBFGS
+from pyspark.ml.classification import LogisticRegression
 from pyspark.mllib.regression import LabeledPoint
 from pyspark.mllib.linalg import Vectors
 
