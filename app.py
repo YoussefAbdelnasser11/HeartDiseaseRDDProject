@@ -10,19 +10,26 @@ st.title("❤️ Heart Disease Prediction App")
 st.markdown("---")
 
 st.header("📝 Enter Patient Data")
-age = st.slider("Age", 20, 100, 50)
-sex = st.selectbox("Sex", ["Male", "Female"])
-cp = st.selectbox("Chest Pain Type", ["Typical Angina (0)", "Atypical Angina (1)", "Non-Anginal Pain (2)", "Asymptomatic (3)"])
-trestbps = st.slider("Resting Blood Pressure", 80, 200, 120)
-chol = st.slider("Serum Cholesterol (mg/dl)", 100, 600, 240)
-fbs = st.selectbox("Fasting Blood Sugar > 120 mg/dl", ["No (0)", "Yes (1)"])
-restecg = st.selectbox("Resting ECG Results", ["Normal (0)", "ST-T Wave Abnormality (1)", "Left Ventricular Hypertrophy (2)"])
-thalach = st.slider("Maximum Heart Rate Achieved", 70, 220, 150)
-exang = st.selectbox("Exercise Induced Angina", ["No (0)", "Yes (1)"])
-oldpeak = st.slider("Oldpeak", 0.0, 6.0, 1.0)
-slope = st.selectbox("Slope of Peak Exercise ST Segment", ["Upsloping (0)", "Flat (1)", "Downsloping (2)"])
-ca = st.selectbox("Number of Major Vessels Colored", [0, 1, 2, 3, 4])
-thal = st.selectbox("Thalassemia", ["No Data (0)", "Normal (1)", "Fixed Defect (2)", "Reversible Defect (3)"])
+age = st.slider("Age", 20, 100, 50, help="Patient's age in years")
+sex = st.selectbox("Sex", ["Male", "Female"], help="Patient's gender")
+cp = st.selectbox("Chest Pain Type", ["Typical Angina (0)", "Atypical Angina (1)", "Non-Anginal Pain (2)", "Asymptomatic (3)"],
+                  help="0: Typical angina, 1: Atypical angina, 2: Non-anginal pain, 3: Asymptomatic")
+trestbps = st.slider("Resting Blood Pressure", 80, 200, 120, help="Resting blood pressure in mm Hg")
+chol = st.slider("Serum Cholesterol (mg/dl)", 100, 600, 240, help="Serum cholesterol in mg/dl")
+fbs = st.selectbox("Fasting Blood Sugar > 120 mg/dl", ["No (0)", "Yes (1)"],
+                   help="0: Fasting blood sugar ≤ 120 mg/dl, 1: > 120 mg/dl")
+restecg = st.selectbox("Resting ECG Results", ["Normal (0)", "ST-T Wave Abnormality (1)", "Left Ventricular Hypertrophy (2)"],
+                       help="0: Normal, 1: ST-T wave abnormality, 2: Left ventricular hypertrophy")
+thalach = st.slider("Maximum Heart Rate Achieved", 70, 220, 150, help="Maximum heart rate during exercise")
+exang = st.selectbox("Exercise Induced Angina", ["No (0)", "Yes (1)"],
+                     help="0: No angina during exercise, 1: Yes")
+oldpeak = st.slider("Oldpeak", 0.0, 6.0, 1.0, step=0.1, help="ST depression induced by exercise relative to rest")
+slope = st.selectbox("Slope of Peak Exercise ST Segment", ["Upsloping (0)", "Flat (1)", "Downsloping (2)"],
+                     help="0: Upsloping, 1: Flat, 2: Downsloping")
+ca = st.selectbox("Number of Major Vessels Colored", [0, 1, 2, 3, 4],
+                  help="Number of major vessels (0-4) colored by fluoroscopy")
+thal = st.selectbox("Thalassemia", ["No Data (0)", "Normal (1)", "Fixed Defect (2)", "Reversible Defect (3)"],
+                    help="0: No data, 1: Normal, 2: Fixed defect, 3: Reversible defect")
 
 # Convert selectbox inputs to numeric values
 def extract_numeric(value):
@@ -52,28 +59,23 @@ thal_3 = 1 if thal_val == 3 else 0
 input_data = np.array([[age, sex_val, trestbps, chol, fbs_val, restecg_1, restecg_2, thalach,
                         exang_val, oldpeak, slope_1, slope_2, ca, cp_1, cp_2, cp_3, thal_2, thal_3]])
 
-# Define all possible features (before selection)
-all_features = ['age', 'sex', 'trestbps', 'chol', 'fbs', 'restecg_1', 'restecg_2', 'thalach',
-                'exang', 'oldpeak', 'slope_1', 'slope_2', 'ca', 'cp_1', 'cp_2', 'cp_3', 'thal_2', 'thal_3']
+# Define all possible features (matching training feature names with .0 suffix)
+all_features = ['age', 'sex', 'trestbps', 'chol', 'fbs', 'restecg_1.0', 'restecg_2.0', 'thalach',
+                'exang', 'oldpeak', 'slope_1.0', 'slope_2.0', 'ca', 'cp_1.0', 'cp_2.0', 'cp_3.0', 'thal_2.0', 'thal_3.0']
 
-# Load scaler, model, and important features
+# Load model
 try:
-    scaler = joblib.load("scaler.pkl")
-    model = joblib.load("random_forest_model (1).pkl")
-    important_features = joblib.load("important_features.pkl")
+    model = joblib.load("random_forest_model.pkl")
 
-    # Convert input data to DataFrame for easier feature selection
+    # Validate input data
     input_df = pd.DataFrame(input_data, columns=all_features)
 
-    # Scale the input data (scaler expects 18 features)
-    input_data_scaled = scaler.transform(input_df)
+    # Ensure numeric data
+    input_df = input_df.astype(float)
 
-    # Select only the important features (11 features) for the model
-    input_data_selected = input_df[important_features]
-
-    # Predict
-    prediction = model.predict(input_data_selected)[0]
-    proba = model.predict_proba(input_data_selected)[0]
+    # Predict directly (no scaling, using all 18 features)
+    prediction = model.predict(input_df)[0]
+    proba = model.predict_proba(input_df)[0]
     
     st.subheader("📊 Prediction Result")
     result_text = "✅ No Heart Disease Detected" if prediction == 0 else "⚠️ High Risk of Heart Disease"
@@ -107,5 +109,5 @@ try:
     st.markdown("### Created by [Youssef Abdelnasser](https://www.linkedin.com/in/youssef-abdalnasser-33705b262/)")
 
 except Exception as e:
-    st.error("Model, scaler, or important features file not found, or prediction failed.")
+    st.error("Model file not found, or prediction failed.")
     st.text(str(e))
